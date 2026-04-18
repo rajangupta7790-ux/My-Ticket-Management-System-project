@@ -1,17 +1,18 @@
 # 🎫 Ticket Management System
 
-Ek simple aur muskil ticket booking system jo trains ke liye banaya gaya hai. Users easily se apni tickets book kar sakte hain, aur admin panel se pura system manage kar sakte hain.
+A simple and efficient ticket booking system designed for trains. Users can easily book their tickets, 
+and the entire system can be managed through the admin panel.
 
 ## ✨ Features
 
 - **User Registration & Login** - Secure authentication system
-- **Train Search** - Available trains dhundho apne dates ke according
-- **Ticket Booking** - Asaan se ticket book karo at passenger details ke saath
+- **Train Search** - Find available trains according to your selected dates
+- **Ticket Booking** - Easily book tickets with passenger details
 - **Payment Integration** - Online payment support(Dummp payment method)
-- **Booking History** - Apne saarey tickets dekho ek jagah
-- **Admin Dashboard** - Trains, schedules, stations manage karo
-- **Payment Verification** - Admin se payment verification system
-- **Analytics** - Booking statistics aur reports
+- **Booking History** - View all your tickets in one place
+- **Admin Dashboard** - Manage trains, schedules, and stations
+- **Payment Verification** - Admin-based payment verification system
+- **Analytics** - Booking statistics and reports
 
 ## 🛠️ Technology Stack
 
@@ -29,29 +30,29 @@ MySQL
 
 ## 🚀 Installation & Setup
 
-### 1. Project ko Clone Karo
+### 1. Clone the Project
 ```bash
 git clone <repository-link>
 cd Ticket-Management-System
 ```
 
-### 2. Python Dependencies Install Karo
+### 2. Install Python Dependencies
 ```bash
 cd backend
 pip install -r requirements.txt
 ```
 
-### 3. Database Setup Karo
+### 3. Database Setup 
 ```bash
-# MySQL mein jaao aur ye command run karo:
+# Go to MySQL and run this command:
 mysql -u root -p < ../database/schema.sql
 ```
 
-### 4. Config File Setup Karo
-`backend/config.py` mein apni settings daalo:
+### 4. Configure the Config File
+`Add your settings in backend/config.py:
 - Database credentials
 - Secret key
-- Koi aur configuration
+- Any other configuration
 
 ## 🏃 How to Run
 
@@ -60,7 +61,7 @@ cd backend
 python app.py
 ```
 
-Application automatically http://localhost:5000 par khul jaega
+The application will automatically open at: http://localhost:5000 
 
 ## 📁 Project Structure
 
@@ -78,7 +79,7 @@ Ticket Management System/
 │
 ├── frontend/
 │   ├── templates/       # HTML files
-│   │   ├── auth/        # Login aur Register pages
+│   │   ├── auth/        # Login and Register pages
 │   │   ├── booking/     # Booking related pages
 │   │   └── admin/       # Admin panel pages
 │   └── static/
@@ -91,24 +92,24 @@ Ticket Management System/
 
 ## 📖 Usage
 
-1. **Home Page** - App khulte hi home page nazar aayega
-2. **Register Karo** - Naya account banao
-3. **Login Karo** - Apne credentials se login karo
-4. **Trains Search Karo** - Date aur destination select karo
-5. **Ticket Book Karo** - Passengers details aur make payment
-6. **Admin Panel** (Admin ke liye) - Dashboard mein trains/schedules manage karo
+1.Home Page     – The home page will appear when the app starts
+2.Register      – Create a new account
+3.Login         – Log in using your credentials
+4.Search Trains – Select date and destination
+5.Book Ticket   – Enter passenger details and make payment
+6.Admin Panel   – Manage trains and schedules from the dashboard
 
 ## 🔒 Admin Access
 
-Admin panel mein kaise jaao:
-- Admin specific route use karo
-- Admin credentials se login karo
+How to access the admin panel:
+- Use the admin-specific route
+- Log in with admin credentials
 
 ## ⚠️ Important Notes
 
-- Database credentials properly set karo config.py mein
-- MySQL server chala skhe hona zaroori hai
-- Payment gateway properly configure karna hoga (agar use kar rahe ho)
+- Properly set database credentials in config.py
+- MySQL server must be running
+- Payment gateway must be properly configured (if being used)
 
 ## 👨‍💻 Author
 
@@ -116,9 +117,9 @@ Your Name / Your GitHub
 
 ## 📞 Support
 
-Koi problem ho toh:
-1. Issues section mein report karo
-2. Ya directly contact karo
+If you face any problem:
+1.Report it in the Issues section
+2.Or contact directly
 
 ## 📄 License
 
