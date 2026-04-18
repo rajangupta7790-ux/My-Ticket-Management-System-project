@@ -134,13 +134,13 @@ This project is open source. You can use it for learning and development purpose
 ## ---- Admin Dashboard ----
 <img width="1890" height="924" alt="Screenshot 2026-04-18 151930" src="https://github.com/user-attachments/assets/0a43aea2-5f73-452b-8219-4bdf7bdb0971" />
 
-## ---- Features ---- 
-<img width="1872" height="905" alt="Screenshot 2026-04-18 151727" src="https://github.com/user-attachments/assets/5d7b2893-c5f5-4abe-895b-c0ea7f3589a0" />
 
 ## ---- Home Page ----
 <img width="1875" height="847" alt="Screenshot 2026-04-18 151709" src="https://github.com/user-attachments/assets/a6f53289-448f-43d1-b545-b3950536f50b" />
 
 
+## ---- Features ---- 
+<img width="1872" height="905" alt="Screenshot 2026-04-18 151727" src="https://github.com/user-attachments/assets/5d7b2893-c5f5-4abe-895b-c0ea7f3589a0" />
 
 
 
