@@ -1,0 +1,143 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Pending Bookings - Admin{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h4 class="mb-0">Pending Booking Requests</h4>
+    </div>
+    <div class="card-body">
+        {% if pending_bookings %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Train</th>
+                            <th>Route</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for b in pending_bookings %}
+                            <tr>
+                                <td>{{ b.id }}</td>
+                                <td>{{ b.user_name }}<br><small class="text-muted">{{ b.user_email }}</small></td>
+                                <td>{{ b.train_no }} - {{ b.train_name }}</td>
+                                <td>{{ b.from_station }} → {{ b.to_station }}</td>
+                                <td>{{ b.journey_date }}</td>
+                                <td>₹{{ b.total_fare }}</td>
+                                <td>{{ b.created_at.strftime('%Y-%m-%d %H:%M') if b.created_at else '-' }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-success approveBtn" 
+                                            data-booking-id="{{ b.id }}" 
+                                            data-user="{{ b.user_name }}"
+                                            data-pnr="{{ b.pnr }}">
+                                        Approve
+                                    </button>
+                                    <button class="btn btn-sm btn-danger rejectBtn" 
+                                            data-booking-id="{{ b.id }}" 
+                                            data-user="{{ b.user_name }}"
+                                            data-pnr="{{ b.pnr }}">
+                                        Reject
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                No pending booking requests.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reject Booking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="rejectForm">
+                <div class="modal-body">
+                    <p>Reject booking for: <strong id="rejectUserName"></strong></p>
+                    <p>PNR: <strong id="rejectPNR"></strong></p>
+                    <div class="mb-3">
+                        <label for="admin_note" class="form-label">Reason (Optional)</label>
+                        <textarea class="form-control" id="admin_note" name="admin_note" rows="3" placeholder="e.g., Invalid document, Duplicate booking..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Confirm Reject</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Approve Confirmation Modal -->
+<div class="modal fade" id="approveModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Approve Booking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="approveForm">
+                <div class="modal-body">
+                    <p>Approve booking for: <strong id="approveUserName"></strong></p>
+                    <p>PNR: <strong id="approvePNR"></strong></p>
+                    <p class="text-muted">User will be notified to proceed with payment.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Confirm Approve</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Approve button handler
+    document.querySelectorAll('.approveBtn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking-id');
+            const userName = this.getAttribute('data-user');
+            const pnr = this.getAttribute('data-pnr');
+            
+            document.getElementById('approveUserName').textContent = userName;
+            document.getElementById('approvePNR').textContent = pnr;
+            document.getElementById('approveForm').action = `/admin/bookings/approve/${bookingId}`;
+            
+            new bootstrap.Modal(document.getElementById('approveModal')).show();
+        });
+    });
+
+    // Reject button handler
+    document.querySelectorAll('.rejectBtn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const bookingId = this.getAttribute('data-booking-id');
+            const userName = this.getAttribute('data-user');
+            const pnr = this.getAttribute('data-pnr');
+            
+            document.getElementById('rejectUserName').textContent = userName;
+            document.getElementById('rejectPNR').textContent = pnr;
+            document.getElementById('rejectForm').action = `/admin/bookings/reject/${bookingId}`;
+            
+            new bootstrap.Modal(document.getElementById('rejectModal')).show();
+        });
+    });
+</script>
+{% endblock %}

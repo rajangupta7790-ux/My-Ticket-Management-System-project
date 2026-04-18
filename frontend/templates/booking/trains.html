@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Available Trains - Railway Booking{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Available Trains</h4>
+            </div>
+            <div class="card-body">
+                <!-- ==================== FILTER & SORT BAR (ADDED) ==================== -->
+                <div class="filter-sort-container mb-4 p-3 bg-light rounded border">
+                    <form method="GET" action="/trains" class="filter-form">
+                        <!-- Preserve existing params -->
+                        <input type="hidden" name="from_id" value="{{ request.args.get('from_id', '') }}">
+                        <input type="hidden" name="to_id" value="{{ request.args.get('to_id', '') }}">
+                        <input type="hidden" name="from_text" value="{{ request.args.get('from_text', '') }}">
+                        <input type="hidden" name="to_text" value="{{ request.args.get('to_text', '') }}">
+                        <input type="hidden" name="date" value="{{ request.args.get('date', '') }}">
+                        <input type="hidden" name="pax" value="{{ request.args.get('pax', 1) }}">
+
+                        <!-- ROW 1: Fare & Time & Apply Button -->
+                        <div class="row g-2 mb-2">
+                            <!-- Fare Range -->
+                            <div class="col-md-2">
+                                <label class="form-label small mb-1">Min Fare (₹)</label>
+                                <input type="number" class="form-control form-control-sm" 
+                                       name="min_fare" placeholder="Min" value="{{ min_fare }}">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small mb-1">Max Fare (₹)</label>
+                                <input type="number" class="form-control form-control-sm" 
+                                       name="max_fare" placeholder="Max" value="{{ max_fare }}">
+                            </div>
+
+                            <!-- Departure Time Range -->
+                            <div class="col-md-2">
+                                <label class="form-label small mb-1">Depart From</label>
+                                <input type="time" class="form-control form-control-sm" 
+                                       name="departure_from" value="{{ departure_from }}">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small mb-1">Depart To</label>
+                                <input type="time" class="form-control form-control-sm" 
+                                       name="departure_to" value="{{ departure_to }}">
+                            </div>
+
+                            <!-- Apply Button -->
+                            <div class="col-md-4 d-flex align-items-end gap-2">
+                                <button type="submit" class="btn btn-primary btn-sm flex-grow-1">Apply Filter</button>
+                                <a href="/trains?from_id={{ request.args.get('from_id', '') }}&to_id={{ request.args.get('to_id', '') }}&from_text={{ request.args.get('from_text', '') }}&to_text={{ request.args.get('to_text', '') }}&date={{ request.args.get('date', '') }}&pax={{ request.args.get('pax', 1) }}" 
+                                   class="btn btn-secondary btn-sm">Reset</a>
+                            </div>
+                        </div>
+
+                        <!-- ROW 2: Filters & Sort -->
+                        <div class="row g-2">
+                            <!-- Available Seats Checkbox -->
+                            <div class="col-md-3 d-flex align-items-end">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" 
+                                           name="only_available" id="onlyAvailable" 
+                                           value="on" {% if only_available == 'on' or only_available == 'true' %}checked{% endif %}>
+                                    <label class="form-check-label small" for="onlyAvailable">
+                                        Only Available Seats
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Sort By -->
+                            <div class="col-md-3">
+                                <label class="form-label small mb-1">Sort By</label>
+                                <select class="form-select form-select-sm" name="sort_by">
+                                    <option value="">Default</option>
+                                    <option value="fare_asc" {% if sort_by == 'fare_asc' %}selected{% endif %}>Fare: Low to High</option>
+                                    <option value="fare_desc" {% if sort_by == 'fare_desc' %}selected{% endif %}>Fare: High to Low</option>
+                                    <option value="depart_asc" {% if sort_by == 'depart_asc' %}selected{% endif %}>Departure: Early</option>
+                                    <option value="depart_desc" {% if sort_by == 'depart_desc' %}selected{% endif %}>Departure: Late</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6"></div>
+                        </div>
+                    </form>
+                </div>
+
+                {% if schedules %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Train No</th>
+                                    <th>Train Name</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Depart</th>
+                                    <th>Arrive</th>
+                                    <th>Fare</th>
+                                    <th>Seats Available</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for schedule in schedules %}
+                                    <tr>
+                                        <td>{{ schedule.train_no }}</td>
+                                        <td>
+                                            {{ schedule.train_name }}
+                                            {% if schedule.is_random %}
+                                                <span class="badge bg-warning text-dark"></span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ schedule.from_station }}</td>
+                                        <td>{{ schedule.to_station }}</td>
+                                        <td>{{ schedule.departure_time }}</td>
+                                        <td>{{ schedule.arrival_time }}</td>
+                                        <td>₹{{ schedule.fare }}</td>
+                                        <td>{{ schedule.available_seats }}</td>
+                                        <td>
+                                            <a href="{{ url_for('booking.passengers', schedule_id=schedule.id, pax=request.args.get('pax', 1)) }}" class="btn btn-primary btn-sm">Book Now</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        No trains found for your search criteria.
+                    </div>
+                {% endif %}
+                
+                <div class="mt-3">
+                    <a href="/search" class="btn btn-secondary">Back to Search</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .filter-sort-container {
+        background-color: #f8f9fa;
+        border-left: 4px solid #007bff;
+    }
+
+    .filter-form .form-control-sm,
+    .filter-form .form-select-sm {
+        font-size: 0.85rem;
+    }
+
+    .filter-form .form-label {
+        font-weight: 500;
+        color: #495057;
+    }
+
+    @media (max-width: 768px) {
+        .filter-sort-container {
+            padding: 15px !important;
+        }
+        
+        .row.g-2 > div {
+            margin-bottom: 10px;
+        }
+    }
+</style>
+{% endblock %}

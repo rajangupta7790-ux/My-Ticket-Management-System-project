@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+
+{% block title %}Payment - Railway Booking{% endblock %}
+
+{% block content %}
+
+<!-- Flash Message Popup -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="flash-popup-overlay" id="flashPopup">
+                <div class="flash-popup {% if category == 'success' %}flash-success{% elif category == 'danger' %}flash-danger{% elif category == 'warning' %}flash-warning{% else %}flash-info{% endif %}">
+                    <div class="flash-icon">
+                        {% if category == 'success' %}✓{% elif category == 'danger' %}✕{% elif category == 'warning' %}⚠{% else %}ℹ{% endif %}
+                    </div>
+                    <div class="flash-content">
+                        <h4>{{ message }}</h4>
+                    </div>
+                    <button class="flash-close" onclick="closeFlashPopup()">×</button>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Complete Payment</h4>
+            </div>
+            <div class="card-body">
+                <!-- Booking Details -->
+                <div class="alert alert-info">
+                    <h5>Booking Details</h5>
+                    <table class="table table-sm table-borderless mb-0">
+                        <tr>
+                            <td><strong>Booking ID:</strong></td>
+                            <td>{{ booking.id }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PNR:</strong></td>
+                            <td>{{ booking.pnr }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Train:</strong></td>
+                            <td>{{ booking.train_no }} - {{ booking.train_name }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Route:</strong></td>
+                            <td>{{ booking.from_station }} → {{ booking.to_station }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Journey Date:</strong></td>
+                            <td>{{ booking.journey_date }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Departure:</strong></td>
+                            <td>{{ booking.departure_time }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Arrival:</strong></td>
+                            <td>{{ booking.arrival_time }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Passenger Details -->
+                <div class="mb-3">
+                    <h5>Passengers</h5>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in booking.passengers %}
+                            <tr>
+                                <td>{{ p.name }}</td>
+                                <td>{{ p.age }}</td>
+                                <td>{{ p.gender }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Total Amount -->
+                <div class="alert alert-success text-center">
+                    <h3 class="mb-0">Total Amount: ₹{{ booking.total_fare }}</h3>
+                </div>
+
+                <!-- Payment Form -->
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            <h5>💳 Demo Payment Gateway</h5>
+                            <p class="text-muted mb-0"><small>(Simulated GPay/PhonePe)</small></p>
+                        </div>
+                        
+                        <form method="POST" action="/payment/{{ booking.id }}/pay" id="paymentForm">
+                            <div class="mb-3">
+                                <label for="amount" class="form-label">Enter Amount to Pay *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="amount" 
+                                           name="amount" 
+                                           step="0.01" 
+                                           placeholder="Enter exact amount" 
+                                           required>
+                                </div>
+                                <small class="text-muted">Please enter the exact amount: ₹{{ booking.total_fare }}</small>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    💰 Pay ₹{{ booking.total_fare }}
+                                </button>
+                                <a href="/my-bookings" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning mt-3 mb-0">
+                    <small>
+                        <strong>Note:</strong> After payment, your booking will be sent to admin for verification. 
+                        You can view your ticket once admin verifies the payment.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Flash Popup Styles */
+    .flash-popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .flash-popup {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        max-width: 450px;
+        min-width: 350px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        animation: slideDown 0.4s ease-out;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .flash-popup.flash-success {
+        border-left: 5px solid #38ef7d;
+    }
+
+    .flash-popup.flash-danger {
+        border-left: 5px solid #ff6b6b;
+    }
+
+    .flash-popup.flash-warning {
+        border-left: 5px solid #ffd93d;
+    }
+
+    .flash-popup.flash-info {
+        border-left: 5px solid #4ecdc4;
+    }
+
+    @keyframes slideDown {
+        from {
+            transform: translateY(-100px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+
+    .flash-icon {
+        font-size: 50px;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+
+    .flash-success .flash-icon {
+        color: #38ef7d;
+    }
+
+    .flash-danger .flash-icon {
+        color: #ff6b6b;
+    }
+
+    .flash-warning .flash-icon {
+        color: #ffd93d;
+    }
+
+    .flash-info .flash-icon {
+        color: #4ecdc4;
+    }
+
+    .flash-content {
+        flex: 1;
+    }
+
+    .flash-content h4 {
+        margin: 0;
+        font-size: 18px;
+        color: #333;
+        font-weight: 600;
+    }
+
+    .flash-close {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 30px;
+        color: #999;
+        cursor: pointer;
+        transition: color 0.3s;
+        line-height: 1;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+    }
+
+    .flash-close:hover {
+        color: #333;
+    }
+
+    /* Original payment page styles */
+    .card {
+        border-radius: 10px;
+    }
+    
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+    
+    .table-borderless td {
+        padding: 0.3rem 0.5rem;
+    }
+    .alert {
+    display: none !important;
+}
+</style>
+
+<script>
+    // Flash popup auto-close and close button
+    function closeFlashPopup() {
+        const popup = document.getElementById('flashPopup');
+        if (popup) {
+            popup.style.animation = 'fadeOut 0.3s ease-out';
+            setTimeout(() => {
+                popup.remove();
+            }, 300);
+        }
+    }
+
+    // Auto close after 5 seconds
+    setTimeout(() => {
+        closeFlashPopup();
+    }, 5000);
+
+    // Close on overlay click
+    document.getElementById('flashPopup')?.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeFlashPopup();
+        }
+    });
+</script>
+{% endblock %}

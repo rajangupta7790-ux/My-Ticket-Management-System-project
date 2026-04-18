@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Successful - Railway Booking{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body text-center p-5">
+                <div class="success-icon mb-4">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+                </div>
+                
+                <h2 class="text-success mb-3">Payment Successful!</h2>
+                
+                <div class="alert alert-success">
+                    <h4 class="mb-3">Transaction Details</h4>
+                    <table class="table table-borderless mb-0">
+                        <tr>
+                            <td class="text-end"><strong>Transaction ID:</strong></td>
+                            <td class="text-start"><code>{{ booking.txn_id if booking.txn_id else txn_id }}</code></td>
+                        </tr>
+                        <tr>
+                            <td class="text-end"><strong>PNR:</strong></td>
+                            <td class="text-start">{{ booking.pnr }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-end"><strong>Amount Paid:</strong></td>
+                            <td class="text-start">₹{{ booking.total_fare }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-end"><strong>Train:</strong></td>
+                            <td class="text-start">{{ booking.train_no }} - {{ booking.train_name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-end"><strong>Route:</strong></td>
+                            <td class="text-start">{{ booking.from_station }} → {{ booking.to_station }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-end"><strong>Journey Date:</strong></td>
+                            <td class="text-start">{{ booking.journey_date }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="alert alert-info">
+                    <h5>⏳ Next Step</h5>
+                    <p class="mb-0">
+                        Your payment is complete and waiting for admin verification. 
+                        You will be able to view and download your ticket once the admin verifies your payment.
+                    </p>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <a href="/my-bookings" class="btn btn-primary btn-lg">
+                        View My Bookings
+                    </a>
+                    <a href="/search" class="btn btn-outline-secondary">
+                        Book Another Ticket
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .success-icon i {
+        animation: scaleIn 0.5s ease-out;
+    }
+    
+    @keyframes scaleIn {
+        from {
+            transform: scale(0);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+    
+    .card {
+        border-radius: 15px;
+    }
+    
+    .table-borderless td {
+        padding: 0.5rem;
+    }
+</style>
+{% endblock %}

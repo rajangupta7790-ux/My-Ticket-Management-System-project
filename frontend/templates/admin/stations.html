@@ -1,0 +1,592 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Manage Stations - Admin{% endblock %}
+
+{% block content %}
+<!-- Hide default Bootstrap alerts -->
+<style>
+.alert {
+    display: none !important;
+}
+
+.custom-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-width: 320px;
+    animation: slideInRight 0.5s ease-out;
+}
+
+.custom-notification.hide {
+    animation: slideOutRight 0.5s ease-out forwards;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.notification-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.notification-message {
+    font-size: 14px;
+    opacity: 0.95;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    opacity: 0.8;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+}
+
+.notification-close:hover {
+    opacity: 1;
+}
+</style>
+
+<!-- Custom Notification -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="custom-notification" id="customNotification">
+                <div class="notification-icon">
+                    {% if category == 'success' %}
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    {% elif category == 'danger' %}
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    {% else %}
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    {% endif %}
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">
+                        {% if category == 'success' %}Success!{% elif category == 'danger' %}Error!{% else %}Info{% endif %}
+                    </div>
+                    <div class="notification-message">{{ message }}</div>
+                </div>
+                <button class="notification-close" onclick="closeNotification()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<script>
+setTimeout(function() {
+    closeNotification();
+}, 4000);
+
+function closeNotification() {
+    const notification = document.getElementById('customNotification');
+    if (notification) {
+        notification.classList.add('hide');
+        setTimeout(() => {
+            notification.remove();
+        }, 500);
+    }
+}
+</script>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <h2>Manage Railway Stations</h2>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+<!-- Add New Station Form -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Add New Station</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin.add_station') }}">
+                    <div class="mb-3">
+                        <label for="station_name" class="form-label">Station Name</label>
+                        <input type="text" class="form-control" id="station_name" name="station_name" required placeholder="e.g. Mumbai Central">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="station_code" class="form-label">Station Code (4 characters)</label>
+                        <input type="text" class="form-control" id="station_code" name="station_code" maxlength="4" required placeholder="e.g. MMCT">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Add Station</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Routes List -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">All Stations ({{ stations|length }})</h5>
+            </div>
+            <div class="card-body">
+                <!-- SEARCH BAR -->
+                <div class="mb-3">
+                    <form method="GET" action="{{ url_for('admin.stations') }}" class="row g-2">
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" name="q" placeholder="🔍 Search by station name or code..." value="{{ request.args.get('q', '') }}">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">Search</button>
+                        </div>
+                    </form>
+                    {% if request.args.get('q') %}
+                        <div class="mt-2">
+                            <a href="{{ url_for('admin.stations') }}" class="btn btn-sm btn-secondary">Clear Search</a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if stations %}
+                    <!-- Delete Selected Button -->
+                    <div class="mb-3">
+                        <button id="deleteSelectedBtn" class="btn btn-danger" style="display: none;" onclick="deleteSelected('station')">
+                            🗑️ Delete Selected (<span id="selectedCount">0</span>)
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px;">
+                                        <input type="checkbox" id="selectAllCheckbox" class="form-check-input" onchange="toggleSelectAll(this, 'station')">
+                                    </th>
+                                    <th>ID</th>
+                                    <th>Station Name</th>
+                                    <th>Station Code</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for station in stations %}
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="form-check-input station-checkbox" value="{{ station.id }}" onchange="updateSelectedCount('station')">
+                                        </td>
+                                        <td>{{ station.id }}</td>
+                                        <td>{{ station.station_name }}</td>
+                                        <td><span class="badge bg-primary">{{ station.station_code }}</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-danger deleteBtn" data-station-id="{{ station.id }}" data-station-name="{{ station.station_name }} ({{ station.station_code }})">Delete</button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        {% if request.args.get('q') %}
+                            No stations found matching your search. <a href="{{ url_for('admin.stations') }}">Show all stations</a>
+                        {% else %}
+                            No stations available. Add your first station above!
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .custom-modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .custom-modal-overlay.show {
+        display: flex;
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .custom-modal-content {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 30px;
+        max-width: 400px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.3s ease-out;
+        text-align: center;
+        color: white;
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(30px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .custom-modal-content h3 {
+        margin-bottom: 15px;
+        font-size: 22px;
+        font-weight: 600;
+    }
+
+    .custom-modal-content p {
+        margin-bottom: 25px;
+        font-size: 15px;
+        opacity: 0.95;
+        line-height: 1.5;
+    }
+
+    .custom-modal-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+    }
+
+    .custom-modal-btn {
+        padding: 10px 25px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-confirm {
+        background-color: #ff6b6b;
+        color: white;
+    }
+
+    .btn-confirm:hover {
+        background-color: #ff5252;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+    }
+
+    .btn-cancel-modal {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 2px solid white;
+    }
+
+    .btn-cancel-modal:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .success-modal-content {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+
+    .success-modal-content h3 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    .success-icon {
+        font-size: 50px;
+        margin-bottom: 15px;
+        animation: scaleIn 0.5s ease-out;
+    }
+
+    @keyframes scaleIn {
+        from { transform: scale(0); }
+        to { transform: scale(1); }
+    }
+
+    .booking-details-success {
+        background-color: rgba(0, 0, 0, 0.1);
+        padding: 15px;
+        border-radius: 8px;
+        margin: 15px 0;
+        font-size: 14px;
+    }
+
+    .btn-success-close {
+        background-color: white;
+        color: #38ef7d;
+        margin-top: 15px;
+    }
+
+    .btn-success-close:hover {
+        background-color: #f0f0f0;
+        transform: translateY(-2px);
+    }
+</style>
+
+<!-- Delete Warning Modal -->
+<div class="custom-modal-overlay" id="deleteModal">
+    <div class="custom-modal-content" id="deleteModalContent">
+        <h3 id="deleteModalTitle">⚠️ Confirm Delete</h3>
+        <p id="deleteModalMessage">Are you sure you want to delete this station? This action cannot be undone.</p>
+        <p id="deleteStationDisplay" style="font-size: 13px; opacity: 0.8; margin-bottom: 15px;">Station: <strong id="deleteStationValue">-</strong></p>
+        <div class="custom-modal-buttons">
+            <button class="custom-modal-btn btn-cancel-modal" id="deleteModalCancelBtn">No, Keep It</button>
+            <button class="custom-modal-btn btn-confirm" id="deleteModalConfirmBtn">Yes, Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="custom-modal-overlay" id="successModal">
+    <div class="custom-modal-content success-modal-content" id="successContent">
+        <div class="success-icon">✓</div>
+        <h3>Station Deleted!</h3>
+        <div class="booking-details-success" id="successDetails">
+            <p>The station has been successfully deleted.</p>
+        </div>
+        <button class="custom-modal-btn btn-success-close" id="successCloseBtn">Close</button>
+    </div>
+</div>
+
+<!-- Bulk Delete Confirmation Modal -->
+<div class="custom-modal-overlay" id="bulkDeleteModal">
+    <div class="custom-modal-content" id="bulkDeleteContent">
+        <h3>⚠️ Confirm Bulk Delete</h3>
+        <p>Are you sure you want to delete <strong id="bulkDeleteCount">0</strong> item(s)? This action cannot be undone.</p>
+        <div class="custom-modal-buttons">
+            <button class="custom-modal-btn btn-cancel-modal" id="bulkDeleteCancelBtn">No, Cancel</button>
+            <button class="custom-modal-btn btn-confirm" id="bulkDeleteConfirmBtn">Yes, Delete All</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentStationId = null;
+    let currentStationName = null;
+
+    // Open delete confirmation modal
+    document.querySelectorAll('.deleteBtn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            currentStationId = this.getAttribute('data-station-id');
+            currentStationName = this.getAttribute('data-station-name');
+            
+            document.getElementById('deleteStationValue').textContent = currentStationName;
+            document.getElementById('deleteModal').classList.add('show');
+        });
+    });
+
+    // Cancel button in delete modal
+    document.getElementById('deleteModalCancelBtn').addEventListener('click', function() {
+        document.getElementById('deleteModal').classList.remove('show');
+        currentStationId = null;
+        currentStationName = null;
+    });
+
+    // Confirm delete station
+    document.getElementById('deleteModalConfirmBtn').addEventListener('click', function() {
+        if (!currentStationId) return;
+
+        document.getElementById('deleteModal').classList.remove('show');
+        
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/stations/delete/${currentStationId}`;
+        document.body.appendChild(form);
+        form.submit();
+    });
+
+    // Close success modal
+    document.getElementById('successCloseBtn').addEventListener('click', function() {
+        window.location.reload();
+    });
+
+    // Click outside modal to close
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.remove('show');
+            currentStationId = null;
+            currentStationName = null;
+        }
+    });
+
+    document.getElementById('successModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.remove('show');
+        }
+    });
+
+    // ============= MULTI-SELECT FUNCTIONALITY =============
+    function toggleSelectAll(checkbox, type) {
+        const checkboxes = document.querySelectorAll(`.${type}-checkbox`);
+        checkboxes.forEach(cb => {
+            cb.checked = checkbox.checked;
+        });
+        updateSelectedCount(type);
+    }
+
+    function updateSelectedCount(type) {
+        const checkboxes = document.querySelectorAll(`.${type}-checkbox:checked`);
+        const count = checkboxes.length;
+        document.getElementById('selectedCount').textContent = count;
+        
+        const deleteBtn = document.getElementById('deleteSelectedBtn');
+        if (count > 0) {
+            deleteBtn.style.display = 'inline-block';
+        } else {
+            deleteBtn.style.display = 'none';
+        }
+    }
+
+    function deleteSelected(type) {
+        const checkboxes = document.querySelectorAll(`.${type}-checkbox:checked`);
+        const ids = Array.from(checkboxes).map(cb => cb.value);
+        
+        if (ids.length === 0) {
+            alert('Please select items to delete');
+            return;
+        }
+
+        // Show custom modal instead of browser confirm
+        document.getElementById('bulkDeleteModal').classList.add('show');
+        document.getElementById('bulkDeleteCount').textContent = ids.length;
+        
+        // Store IDs for deletion
+        window.idsToDelete = ids;
+        window.typeToDelete = type;
+    }
+
+    // Confirm bulk delete from modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const bulkConfirmBtn = document.getElementById('bulkDeleteConfirmBtn');
+        if (bulkConfirmBtn) {
+            bulkConfirmBtn.addEventListener('click', function() {
+                const ids = window.idsToDelete;
+                const type = window.typeToDelete;
+                
+                if (!ids || ids.length === 0) return;
+
+                document.getElementById('bulkDeleteModal').classList.remove('show');
+                
+                fetch(`/admin/${type}s/delete-selected`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ ids: ids })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
+            });
+        }
+
+        // Cancel bulk delete
+        const bulkCancelBtn = document.getElementById('bulkDeleteCancelBtn');
+        if (bulkCancelBtn) {
+            bulkCancelBtn.addEventListener('click', function() {
+                document.getElementById('bulkDeleteModal').classList.remove('show');
+                window.idsToDelete = null;
+                window.typeToDelete = null;
+            });
+        }
+
+        // Close modal on outside click
+        const bulkDeleteModal = document.getElementById('bulkDeleteModal');
+        if (bulkDeleteModal) {
+            bulkDeleteModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('show');
+                    window.idsToDelete = null;
+                    window.typeToDelete = null;
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

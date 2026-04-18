@@ -1,0 +1,421 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to Ticket Booking System{% endblock %}
+
+{% block content %}
+<style>
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 95px 0;
+        margin: 30px -15px 40px -15px;
+        border-radius: 30px 30px 30px 30px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero-content {
+        text-align: center;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        animation: fadeInDown 1s ease-out;
+    }
+
+    .hero-subtitle {
+        font-size: 1.5rem;
+        margin-bottom: 30px;
+        opacity: 0.95;
+        animation: fadeInUp 1s ease-out;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+        animation: fadeIn 1.5s ease-out;
+    }
+
+    .hero-btn {
+        padding: 15px 40px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 50px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-book-now {
+        background: white;
+        color: #667eea;
+        box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-book-now:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(255, 255, 255, 0.5);
+        color: #667eea;
+    }
+
+    .btn-learn-more {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 2px solid white;
+    }
+
+    .btn-learn-more:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-3px);
+        color: white;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Features Section */
+    .features-section {
+        margin: 60px 0;
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 50px;
+        color: #333;
+    }
+
+    .feature-card {
+        background: #74759ea1;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        height: 100%;
+        border: 2px solid transparent;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+        border-color: #667eea;
+    }
+
+    .feature-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+    }
+
+    .feature-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    .feature-description {
+        color: #666;
+        line-height: 1.6;
+    }
+
+    /* Stats Section */
+    .stats-section {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        padding: 60px 0;
+        margin: 60px -15px;
+        border-radius: 30px;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+    .stat-label {
+        font-size: 1.2rem;
+        opacity: 0.95;
+    }
+
+    /* Info Cards */
+    .info-section {
+        margin: 60px 0;
+    }
+
+    .info-card {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 40px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(245, 87, 108, 0.3);
+    }
+
+    .info-card h3 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        font-weight: 700;
+    }
+
+    .info-card ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .info-card li {
+        padding: 10px 0;
+        font-size: 1.1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .info-card li:last-child {
+        border-bottom: none;
+    }
+
+    .info-card li:before {
+        content: "✓ ";
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 60px 40px;
+        border-radius: 20px;
+        text-align: center;
+        margin: 60px 0;
+        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+    }
+
+    .cta-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .cta-subtitle {
+        font-size: 1.3rem;
+        margin-bottom: 30px;
+        opacity: 0.95;
+    }
+
+    .cta-btn {
+        background: white;
+        color: #667eea;
+        padding: 15px 50px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        border-radius: 50px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .cta-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 30px rgba(255, 255, 255, 0.5);
+        color: #667eea;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">🎫 Welcome to Ticket Booking</h1>
+        <p class="hero-subtitle">Book Your Train Tickets Anytime, Anywhere</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('auth.register') }}" class="hero-btn btn-book-now">Book Tickets Now</a>
+            <a href="#features" class="hero-btn btn-learn-more">Learn More</a>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="features-section" id="features">
+    <h2 class="section-title">Why Choose Us?</h2>
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">Fast Booking</h3>
+                <p class="feature-description">Book your tickets in just a few clicks with our streamlined booking process.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3 class="feature-title">Secure Payments</h3>
+                <p class="feature-description">Your transactions are protected with industry-standard encryption.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3 class="feature-title">24/7 Access</h3>
+                <p class="feature-description">Book tickets anytime from any device - desktop, tablet, or mobile.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <div class="feature-icon">🎫</div>
+                <h3 class="feature-title">E-Tickets</h3>
+                <p class="feature-description">Get instant e-tickets with QR codes sent directly to your email.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <div class="feature-icon">💳</div>
+                <h3 class="feature-title">Easy Cancellation</h3>
+                <p class="feature-description">Cancel your bookings with just one click and get instant refunds.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <div class="feature-icon">🗺️</div>
+                <h3 class="feature-title">Wide Network</h3>
+                <p class="feature-description">Access thousands of trains connecting cities across the nation.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Daily Bookings</div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Trains Available</div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <div class="stat-number">50K+</div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <div class="stat-number">99%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="info-section">
+    <h2 class="section-title">How It Works</h2>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="info-card">
+                <h3>📝 Simple Booking Process</h3>
+                <ul>
+                    <li>Create your account or login</li>
+                    <li>Search for trains by route and date</li>
+                    <li>Select your preferred train</li>
+                    <li>Enter passenger details</li>
+                    <li>Confirm booking and get e-ticket</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="info-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <h3>🎯 Key Features</h3>
+                <ul>
+                    <li>Real-time seat availability</li>
+                    <li>Multiple payment options</li>
+                    <li>Instant booking confirmation</li>
+                    <li>Manage your bookings easily</li>
+                    <li>Track your journey status</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="cta-section">
+    <h2 class="cta-title">Ready to Start Your Journey?</h2>
+    <p class="cta-subtitle">Join thousands of happy travelers who trust us for their railway bookings</p>
+    <a href="{{ url_for('auth.register') }}" class="cta-btn">Create Free Account</a>
+</div>
+
+{% endblock %}

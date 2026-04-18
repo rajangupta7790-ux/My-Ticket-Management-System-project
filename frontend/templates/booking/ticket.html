@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block title %}Ticket - Railway Booking{% endblock %}
+
+{% block content %}
+<!-- Hide default Bootstrap alerts -->
+<style>
+.alert {
+    display: none !important;
+}
+
+/* Success Celebration Popup */
+.celebration-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.celebration-popup {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 450px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    text-align: center;
+    color: white;
+    position: relative;
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.celebration-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    animation: bounce 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.celebration-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.celebration-message {
+    font-size: 18px;
+    margin-bottom: 25px;
+    opacity: 0.95;
+    line-height: 1.6;
+}
+
+.celebration-details {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    backdrop-filter: blur(10px);
+}
+
+.celebration-details p {
+    margin: 8px 0;
+    font-size: 16px;
+}
+
+.celebration-details strong {
+    font-weight: 700;
+    color: #fff;
+}
+
+.celebration-btn {
+    background-color: white;
+    color: #11998e;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.celebration-btn:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Confetti Animation */
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #ffd700;
+    position: absolute;
+    animation: confetti-fall 3s linear infinite;
+}
+
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+.confetti:nth-child(1) { left: 10%; animation-delay: 0s; background-color: #ff6b6b; }
+.confetti:nth-child(2) { left: 20%; animation-delay: 0.2s; background-color: #4ecdc4; }
+.confetti:nth-child(3) { left: 30%; animation-delay: 0.4s; background-color: #ffd93d; }
+.confetti:nth-child(4) { left: 40%; animation-delay: 0.6s; background-color: #95e1d3; }
+.confetti:nth-child(5) { left: 50%; animation-delay: 0.8s; background-color: #f38181; }
+.confetti:nth-child(6) { left: 60%; animation-delay: 1s; background-color: #aa96da; }
+.confetti:nth-child(7) { left: 70%; animation-delay: 1.2s; background-color: #fcbad3; }
+.confetti:nth-child(8) { left: 80%; animation-delay: 1.4s; background-color: #6c5ce7; }
+.confetti:nth-child(9) { left: 90%; animation-delay: 1.6s; background-color: #fdcb6e; }
+</style>
+
+<!-- Celebration Popup -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            {% if category == 'success' %}
+                <div class="celebration-overlay" id="celebrationPopup">
+                    <!-- Confetti -->
+                    <div class="confetti"></div>
+                    <div class="confetti"></div>
+                    <div class="confetti"></div>
+                    <div class="confetti"></div>
+                    <div class="confetti"></div>
+                    <div class="confetti"></div>
+                    <div class="confetti"></div>
+                    <div class="confetti"></div>
+                    <div class="confetti"></div>
+                    
+                    <div class="celebration-popup">
+                        <div class="celebration-icon">🎉</div>
+                        <div class="celebration-title">Booking Confirmed!</div>
+                        <div class="celebration-message">
+                            Your train ticket has been successfully booked
+                        </div>
+                        <div class="celebration-details">
+                            <p><strong>PNR:</strong> {{ ticket.pnr }}</p>
+                            <p><strong>Train:</strong> {{ ticket.train }}</p>
+                            <p><strong>Date:</strong> {{ ticket.journey_date }}</p>
+                        </div>
+                        <button class="celebration-btn" onclick="closeCelebration()">
+                            View Ticket Details
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<script>
+function closeCelebration() {
+    const popup = document.getElementById('celebrationPopup');
+    if (popup) {
+        popup.style.animation = 'fadeOut 0.3s ease-out';
+        setTimeout(() => {
+            popup.remove();
+        }, 300);
+    }
+}
+
+// Auto close after 5 seconds
+setTimeout(closeCelebration, 5000);
+
+// Close on overlay click
+document.getElementById('celebrationPopup')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeCelebration();
+    }
+});
+</script>
+
+<style>
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+</style>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header {% if ticket.status == 'Confirmed' %}bg-success{% elif ticket.status == 'Cancelled' %}bg-danger{% else %}bg-secondary{% endif %} text-white">
+                <h4 class="mb-0">Booking {{ ticket.status }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5>PNR: <strong>{{ ticket.pnr }}</strong></h5>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <h5>Status: <span class="badge {% if ticket.status == 'Confirmed' %}bg-success{% elif ticket.status == 'Cancelled' %}bg-danger{% else %}bg-secondary{% endif %}">{{ ticket.status }}</span></h5>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <h6>Train Details</h6>
+                        <p class="mb-1"><strong>Train:</strong> {{ ticket.train }}</p>
+                        <p class="mb-1"><strong>From:</strong> {{ ticket.from_station }}</p>
+                        <p class="mb-1"><strong>To:</strong> {{ ticket.to_station }}</p>
+                        <p class="mb-1"><strong>Date:</strong> {{ ticket.journey_date }}</p>
+                        <p class="mb-1"><strong>Departure:</strong> {{ ticket.departure_time }}</p>
+                        <p class="mb-1"><strong>Arrival:</strong> {{ ticket.arrival_time }}</p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <h6>Passenger Details</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>S.No</th>
+                                        <th>Name</th>
+                                        <th>Age</th>
+                                        <th>Gender</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for passenger in ticket.passengers %}
+                                        <tr>
+                                            <td>{{ loop.index }}</td>
+                                            <td>{{ passenger.name }}</td>
+                                            <td>{{ passenger.age }}</td>
+                                            <td>{{ passenger.gender }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h5>Total Fare: <strong>₹{{ ticket.total_fare }}</strong></h5>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        {% if ticket.qr_code %}
+                            <img src="{{ ticket.qr_code }}" alt="Ticket QR Code" style="width: 150px; height: 150px; border: 2px solid #198754;">
+                            <p class="text-muted small mt-2">Scan to view ticket details</p>
+                        {% else %}
+                            <div class="qr-placeholder" style="width: 150px; height: 150px; border: 2px dashed #ccc; display: inline-flex; align-items: center; justify-content: center; background-color: #f8f9fa;">
+                                <span class="text-muted">QR Code</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="/ticket/{{ ticket.id }}/download" class="btn btn-success">📄 Download PDF</a>
+                    <a href="/my-bookings" class="btn btn-primary">View My Bookings</a>
+                    <a href="/search" class="btn btn-secondary">Book Another Ticket</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}Search Trains - Railway Booking{% endblock %}
+
+{% block content %}
+<!-- Custom Notification Styles -->
+<style>
+/* Hide default Bootstrap alerts only on this page */
+.alert {
+    display: none !important;
+}
+
+.custom-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-width: 320px;
+    animation: slideInRight 0.5s ease-out;
+}
+
+.custom-notification.hide {
+    animation: slideOutRight 0.5s ease-out forwards;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.notification-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.notification-message {
+    font-size: 14px;
+    opacity: 0.95;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    opacity: 0.8;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+}
+
+.notification-close:hover {
+    opacity: 1;
+}
+</style>
+
+<!-- Custom Success Notification -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            {% if category == 'success' %}
+                <div class="custom-notification" id="customNotification">
+                    <div class="notification-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">Login Successful!</div>
+                        <div class="notification-message">Welcome back to Railway Booking</div>
+                    </div>
+                    <button class="notification-close" onclick="closeNotification()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<script>
+// Auto-hide notification after 4 seconds
+setTimeout(function() {
+    closeNotification();
+}, 4000);
+
+function closeNotification() {
+    const notification = document.getElementById('customNotification');
+    if (notification) {
+        notification.classList.add('hide');
+        setTimeout(() => {
+            notification.remove();
+        }, 500);
+    }
+}
+</script>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Search Trains</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/search">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">From Station</label>
+                            <input type="text" class="form-control"
+                                   name="from_text"
+                                   placeholder="Type station name"
+                                   list="stationOptions"
+                                   required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">To Station</label>
+                            <input type="text" class="form-control"
+                                   name="to_text"
+                                   placeholder="Type station name"
+                                   list="stationOptions"
+                                   required>
+                        </div>
+                    </div>
+                    
+                    <p class="text-muted small">Note: If you type a station name, it will be used instead of dropdown.</p>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="journey_date" class="form-label">Journey Date</label>
+                            <input type="date" class="form-control" id="journey_date" name="journey_date" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="passengers_count" class="form-label">Number of Passengers</label>
+                            <select class="form-select" id="passengers_count" name="passengers_count" required>
+                                <option value="1">1 Passenger</option>
+                                <option value="2">2 Passengers</option>
+                                <option value="3">3 Passengers</option>
+                                <option value="4">4 Passengers</option>
+                                <option value="5">5 Passengers</option>
+                                <option value="6">6 Passengers</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">Search Trains</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<datalist id="stationOptions">
+  {% for station in stations %}
+    <option value="{{ station }}"></option>
+  {% endfor %}
+</datalist>
+{% endblock %}

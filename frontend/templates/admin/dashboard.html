@@ -1,0 +1,137 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Admin Dashboard - Railway Booking{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h2>Admin Dashboard</h2>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total Stations</h5>
+                <h2>{{ stats.stations if stats else 0 }}</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Total Trains</h5>
+                <h2>{{ stats.trains if stats else 0 }}</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Total Routes</h5>
+                <h2>{{ stats.routes if stats else 0 }}</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">Total Bookings</h5>
+                <h2>{{ stats.bookings if stats else 0 }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card text-white bg-dark">
+            <div class="card-body">
+                <h5 class="card-title">Total Revenue</h5>
+                <h2>₹{{ stats.revenue if stats else 0 }}</h2>
+                <small>From confirmed bookings only</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card text-white bg-secondary">
+            <div class="card-body">
+                <h5 class="card-title">Analytics Dashboard</h5>
+                <p class="mb-3">View detailed charts and statistics</p>
+                <a href="{{ url_for('admin.analytics') }}" class="btn btn-light">View Analytics</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Management Sections -->
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Stations</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Manage railway stations</p>
+                <a href="{{ url_for('admin.stations') }}" class="btn btn-primary">Manage Stations</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Trains</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Manage trains</p>
+                <a href="{{ url_for('admin.trains') }}" class="btn btn-primary">Manage Trains</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Routes</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Manage train routes</p>
+                <a href="{{ url_for('admin.routes') }}" class="btn btn-primary">Manage Routes</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Schedules</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Manage train schedules</p>
+                <a href="{{ url_for('admin.schedules') }}" class="btn btn-primary">Manage Schedules</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Bookings</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">View all bookings</p>
+                <a href="{{ url_for('admin.bookings') }}" class="btn btn-primary">View Bookings</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

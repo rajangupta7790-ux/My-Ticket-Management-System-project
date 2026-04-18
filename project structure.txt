@@ -1,0 +1,52 @@
+ticket_booking/
+│
+├── backend/
+│   ├── app.py
+│   ├── config.py
+│   ├── db.py
+│   ├── models.py
+│   │
+│   ├── routes/
+│   │   ├── auth.py
+│   │   ├── booking.py
+│   │   └── admin.py
+│   │
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── templates/
+│   │   ├── base.html
+│   │   ├── auth/
+│   │   │   ├── login.html
+│   │   │   ├── register.html
+|   |   |   └── home.html
+│   │   │
+│   │   ├── booking/
+│   │   │   ├── search.html
+│   │   │   ├── trains.html
+│   │   │   ├── passenger.html
+│   │   │   ├── ticket.html
+|   |   |   ├── payment.html
+|   |   |   ├── payment_success.html
+│   │   │   └── my_bookings.html
+│   │   │
+│   │   └── admin/
+│   │        ├── dashboard.html
+|   |        ├── booking.html
+|   |        ├── payment_verification.html
+|   |        ├── pending_booking.html
+│   │        ├── admin_base.html
+|   |        ├── login.html
+|   |        ├── routes.html
+|   |        ├── schedules.html
+|   |        ├── stations.html
+|   |        ├── analytics.html
+|   |        └── trains.html  
+|   |
+│   └── static/
+│       ├── css/style.css
+│       ├── js/main.js
+|       └── favicon.svg
+│
+└── database/
+    └── schema.sql

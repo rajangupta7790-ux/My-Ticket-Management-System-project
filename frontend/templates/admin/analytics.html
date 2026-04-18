@@ -1,0 +1,148 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Analytics Dashboard - Railway Booking{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h2>Analytics Dashboard</h2>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+    </div>
+</div>
+
+<!-- Revenue Trend Chart -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Revenue Trend (Last 7 Days)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="revenueChart" height="80"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Booking Status and Popular Routes Charts -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Booking Status Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Top 5 Popular Routes</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="routesChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+
+<script>
+// Revenue Trend Chart
+const revenueData = {{ chart_data.revenue | tojson }};
+const revenueDates = revenueData.map(item => item.date);
+const revenueAmounts = revenueData.map(item => item.revenue);
+
+const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+new Chart(revenueCtx, {
+    type: 'bar',
+    data: {
+        labels: revenueDates,
+        datasets: [{
+            label: 'Revenue (₹)',
+            data: revenueAmounts,
+            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Booking Status Chart
+const statusData = {{ chart_data.status | tojson }};
+const statusLabels = statusData.map(item => item.status);
+const statusCounts = statusData.map(item => item.count);
+
+const statusCtx = document.getElementById('statusChart').getContext('2d');
+new Chart(statusCtx, {
+    type: 'pie',
+    data: {
+        labels: statusLabels,
+        datasets: [{
+            data: statusCounts,
+            backgroundColor: [
+                'rgba(75, 192, 192, 0.6)',
+                'rgba(255, 99, 132, 0.6)',
+                'rgba(255, 206, 86, 0.6)',
+                'rgba(153, 102, 255, 0.6)'
+            ],
+            borderColor: [
+                'rgba(75, 192, 192, 1)',
+                'rgba(255, 99, 132, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(153, 102, 255, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true
+    }
+});
+
+// Top Routes Chart
+const routesData = {{ chart_data.routes | tojson }};
+const routeLabels = routesData.map(item => item.route_name);
+const routeCounts = routesData.map(item => item.bookings);
+
+const routesCtx = document.getElementById('routesChart').getContext('2d');
+new Chart(routesCtx, {
+    type: 'bar',
+    data: {
+        labels: routeLabels,
+        datasets: [{
+            label: 'Bookings',
+            data: routeCounts,
+            backgroundColor: 'rgba(255, 159, 64, 0.6)',
+            borderColor: 'rgba(255, 159, 64, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        indexAxis: 'y',
+        scales: {
+            x: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
